@@ -1,10 +1,14 @@
 'use strict';
 
-// The group header is the first pane in the order Herdr gave us — the order
-// the sidebar draws — not the most recently active pane. When the panel is
-// grouped, `displayOrder` sorts the entries descending by recency; a head
-// picked from that order puts the header after the workspace's other panes,
-// and they read as part of the previous project group (#49).
+// The group header is the first pane in the displayed order — the order the
+// sidebar draws — not the first in Herdr's snapshot. When the panel is
+// grouped, `displayOrder` sorts the entries; a head picked from the snapshot
+// order puts the header after the workspace's other panes when they rank
+// higher, and they read as part of the previous project group (#49).
+//
+// The fingerprint only includes heads and tails (not the full pane list), so
+// a mid-list pane changing activity does not trigger a rewrite — the header
+// stays put until the head or tail itself moves.
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
@@ -39,7 +43,7 @@ test('writeGroups puts the group token on the first pane in the entries order', 
   assert.equal(sent.get('w:p2'), null, 'the other pane has no header');
 });
 
-test('groupJobs passes the original entries to writeGroups, not the sorted displayEntries', async (t) => {
+test('groupJobs passes the displayEntries to writeGroups, not the original entries', async (t) => {
   let received;
   t.mock.method(state, 'writeGroups', async (_source, entries) => {
     received = entries;
@@ -63,5 +67,5 @@ test('groupJobs passes the original entries to writeGroups, not the sorted displ
     0,
     [],
   );
-  assert.equal(received, entries, 'writeGroups received the original entries, not displayEntries');
+  assert.equal(received, displayEntries, 'writeGroups received displayEntries, not the original entries');
 });
