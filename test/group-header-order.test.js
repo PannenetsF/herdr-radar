@@ -70,7 +70,7 @@ test('groupJobs passes the displayEntries to writeGroups, not the original entri
   assert.equal(received, displayEntries, 'writeGroups received displayEntries, not the original entries');
 });
 
-test('groupJobs does not rewrite when only mid-list activity changes', async (t) => {
+test('groupJobs rewrites when the display order changes', async (t) => {
   let calls = 0;
   t.mock.method(state, 'writeGroups', async () => {
     calls += 1;
@@ -96,7 +96,7 @@ test('groupJobs does not rewrite when only mid-list activity changes', async (t)
   await frame.groupJobs(entries, displayEntries1, 'grouped', true, wsAgents, workspaces, keys, 0, []);
   await frame.groupJobs(entries, displayEntries2, 'grouped', true, wsAgents, workspaces, keys, 0, []);
 
-  assert.equal(calls, 1, 'writeGroups called once despite mid-list reorder');
+  assert.equal(calls, 2, 'writeGroups called twice because display order changed');
 });
 
 test('writeGroups clears the old header when the head moves', async (t) => {
