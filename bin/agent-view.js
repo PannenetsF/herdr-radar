@@ -60,7 +60,7 @@ async function standalone(flag, message, current) {
   // is the fix, and the alternative ordering can lose the override silently.
   if (flag === '--native') view.setRows(Boolean(next));
 
-  const reply = next ? await view.apply(next) : await view.clear();
+  const reply = next ? await (next === 'grouped' ? view.applyGrouped() : view.apply(next)) : await view.clear();
   if (!reply || reply.error) {
     console.log(`agent view: ${next ? 'set' : 'clear'} failed${reply?.error ? ` (${reply.error.code})` : ''}`);
     process.exitCode = 1;
